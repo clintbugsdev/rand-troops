@@ -1,0 +1,20 @@
+{
+  "name": "rand-troops",
+  "version": "1.0.0",
+  "description": "A library to create armies of randomly distributed troops.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "concurrently \"cargo clean\" \"cargo build --release\" \"npm install\""
+  },
+  "author": "Clinton Bugtong <clintbugs.dev@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "ffi-napi": "^4.0.3",
+    "ref-array-di": "^1.2.2",
+    "ref-napi": "^3.0.3"
+  },
+  "devDependencies": {
+    "concurrently": "^6.2.1"
+  }
+}
