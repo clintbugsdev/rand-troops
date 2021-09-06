@@ -12,3 +12,5 @@ crate-type = ["cdylib"]
 [dependencies]
 libc = "0.2.101"
 rand = "0.8.4"
+itertools = "0.10.1"
+redis = { version = "0.21.2", features = ["tokio-comp"] }
