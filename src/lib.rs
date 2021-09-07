@@ -5,26 +5,48 @@ extern crate libc;
 use libc::{c_char, size_t};
 use rand::seq::SliceRandom;
 use rand::Rng;
-use redis::Commands;
+use redis::{Client, Commands, Connection, ConnectionLike, RedisResult};
+use std::env;
 use std::error::Error;
 use std::ffi::CStr;
 use std::mem;
 
 use itertools::Itertools;
 
-fn connect() -> redis::Connection {
-    redis::Client::open("redis://127.0.0.1/")
-        .expect("Invalid connection URL")
-        .get_connection()
-        .expect("failed to connect to Redis")
+fn connect() -> RedisResult<Connection> {
+    //format - host:port
+    let redis_host_name = match env::var("ENVIRONMENT_VARIABLE") {
+        Ok(v) => v.to_string(),
+        Err(_) => "127.0.0.1".to_string(),
+    };
+
+    let redis_password = match env::var("REDIS_PASSWORD") {
+        Ok(v) => v.to_string(),
+        Err(_) => "".to_string(),
+    };
+
+    //if Redis server needs secure connection
+    let uri_scheme = match env::var("IS_TLS") {
+        Ok(_) => "rediss",
+        Err(_) => "redis",
+    };
+
+    let mut redis_conn_url = match redis_password.len() > 0 {
+        true => format!("{}://:{}@{}", uri_scheme, redis_password, redis_host_name),
+        false => format!("{}://{}", uri_scheme, redis_host_name),
+    };
+
+    let mut client = redis::Client::open(redis_conn_url);
+    let mut conn = client.unwrap().get_connection();
+    conn
 }
 
 fn rand_get_list(hashed_req_str: &str) -> Vec<String> {
     let mut conn = connect();
-
-    let list: Vec<String> = conn
-        .smembers(hashed_req_str)
-        .expect("failed to execute SMEMBERS");
+    let list: Vec<String> = match conn.is_ok() {
+        true => conn.unwrap().smembers(hashed_req_str).unwrap(),
+        _ => vec![],
+    };
     println!("{:?}", list);
     list
 }
@@ -32,31 +54,46 @@ fn rand_get_list(hashed_req_str: &str) -> Vec<String> {
 fn rand_is_member(hashed_req_str: &str, item: &String) -> bool {
     let mut conn = connect();
 
-    let is_member: bool = redis::cmd("SISMEMBER")
-        .arg(hashed_req_str)
-        .arg(item)
-        .query(&mut conn)
-        .expect("failed to execute SISMEMBER");
+    let is_member = match conn.is_ok() {
+        true => redis::cmd("SISMEMBER")
+            .arg(hashed_req_str)
+            .arg(item)
+            .query(&mut conn.unwrap())
+            .unwrap(),
+        _ => false,
+    };
 
     is_member
 }
 
-fn rand_add(hashed_req_str: &str, item: &String) -> Result<(), Box<dyn Error>> {
+fn rand_add(hashed_req_str: &str, item: &String) -> bool {
     let mut conn = connect();
 
-    let _: () = conn
-        .sadd(hashed_req_str, item)
-        .expect("failed to execute SADD");
+    if conn.is_err() {
+        return false;
+    }
 
-    Ok(())
+    let _: () = match conn.is_ok() {
+        true => conn.unwrap().sadd(hashed_req_str, item).unwrap(),
+        _ => (),
+    };
+
+    true
 }
 
-fn rand_del(hashed_req_str: &str) -> Result<(), Box<dyn Error>> {
+fn rand_del(hashed_req_str: &str) -> bool {
     let mut conn = connect();
 
-    let _: () = conn.del(hashed_req_str).expect("failed to execute DEL");
+    if conn.is_err() {
+        return false;
+    }
 
-    Ok(())
+    let _: () = match conn.is_ok() {
+        true => conn.unwrap().del(hashed_req_str).unwrap(),
+        _ => (),
+    };
+
+    true
 }
 
 #[no_mangle]
@@ -97,14 +134,13 @@ pub extern "C" fn rand_generate(
                 let mut merged_generated = generated.clone().iter().join("-");
                 // is member then reset variables to go back to loop
                 if rand_is_member(hashed_req_str, &merged_generated) {
+                    types = orig_types;
+                    size = orig_size;
+                    generated.clear();
                     // delete random list if length was equal to the size
                     if rand_list.len() as u32 >= orig_types {
                         rand_del(hashed_req_str);
                     }
-                    types = orig_types;
-                    size = orig_size;
-                    println!("{:?}", generated);
-                    generated.clear();
                 } else {
                     // add generated random numbers to Redis
                     rand_add(hashed_req_str, &merged_generated);
