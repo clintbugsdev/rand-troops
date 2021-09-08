@@ -17,7 +17,7 @@ const lib = ffi.Library(randGenlibPath, {
 
 function randomTroops(player, armyTypes, armySize) {
   const reqStr = `${player}${armyTypes.join("")}${armySize}`;
-  const sha256Hasher = crypto.createHmac("sha256", reqStr);
+  const sha256Hasher = crypto.createHmac("sha256", reqStr.replace(/\s/g, ""));
   const hashedReq = sha256Hasher.update(reqStr).digest("base64");
   const bufPtr = ref.alloc(randTroopsArrayPtr);
   const arraySize = lib.rand_generate(
