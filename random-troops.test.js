@@ -1,7 +1,7 @@
 const each = require("jest-each").default;
 const randomTroops = require("./random-troops");
 
-var len = 100;
+var len = 10;
 var args = new Array(len);
 for (let i = 0; i < len; i++) {
   args.push({
@@ -40,5 +40,14 @@ for (let i = 0; i < len; i++) {
   });
 }
 each(args).test("test $i x ", ({ i, a, b, c, expected }) => {
-  expect(randomTroops(a, b, c).length).toBe(expected);
+  const randTroopsResult = randomTroops(a, b, c);
+  // expect total sum is equal to user input
+  expect(
+    randTroopsResult.reduce(
+      (accumulator, current) => accumulator + current.troops,
+      0
+    )
+  ).toBe(c);
+  // expect length of array is equal to lenth of army types
+  expect(randTroopsResult.length).toBe(expected);
 });
