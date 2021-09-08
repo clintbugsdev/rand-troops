@@ -11,13 +11,14 @@
   "author": "Clinton Bugtong <clintbugs.dev@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "crypto-js": "^4.1.1",
-    "ffi-napi": "^4.0.3",
-    "ref-array-di": "^1.2.2",
-    "ref-napi": "^3.0.3"
+    "crypto-js": "4.1.1",
+    "ffi-napi": "3.0.1",
+    "ref-array-di": "1.2.2",
+    "ref-napi": "3.0.1"
   },
   "devDependencies": {
     "concurrently": "^6.2.1",
-    "jest": "^27.1.0"
+    "jest": "^27.1.0",
+    "jest-each": "^27.1.0"
   }
 }

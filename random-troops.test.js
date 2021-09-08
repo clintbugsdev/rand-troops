@@ -1,53 +1,44 @@
+const each = require("jest-each").default;
 const randomTroops = require("./random-troops");
-// describe("randomTroops", () => {
-//   beforeEach(() => {
-//     randomTroops = require("./random-troops");
-//   });
-//   //   it("size: 10", () => {
-//   //     expect(
-//   //       randomTroops("Clinton", ["Spearmen", "Swordsmen", "Archer"], 10).length
-//   //     ).toEqual(3);
-//   //   });
 
-//   //   it("works too", () => {
-//   //     expect(
-//   //       randomTroops("Clinton", ["Spearmen", "Swordsmen", "Archer"], 100).length
-//   //     ).toBe(3);
-//   //   });
-// });
-
-test("size: 1,000", () => {
-  expect(
-    randomTroops(
-      "Clinton",
-      ["Spearmen", "Swordsmen", "Archer", "Mace", "Healer", "Catapult"],
-      1000
-    ).length
-  ).toBe(6);
+var len = 100;
+var args = new Array(len);
+for (let i = 0; i < len; i++) {
+  args.push({
+    i: i,
+    a: "Clinton",
+    b: [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w",
+      "x",
+      "y",
+      "z",
+    ],
+    c: 1000,
+    expected: 26,
+  });
+}
+each(args).test("test $i x ", ({ i, a, b, c, expected }) => {
+  expect(randomTroops(a, b, c).length).toBe(expected);
 });
-
-test("size: 10,000", () => {
-  expect(
-    randomTroops(
-      "Clinton",
-      ["Spearmen", "Swordsmen", "Archer", "Mace", "Healer", "Catapult"],
-      10000
-    ).length
-  ).toBe(6);
-});
-
-test("size: 1000,000", () => {
-  expect(
-    randomTroops(
-      "Clinton",
-      ["Spearmen", "Swordsmen", "Archer", "Mace", "Healer", "Catapult"],
-      100000
-    ).length
-  ).toBe(6);
-});
-
-// test("size: 10000", () => {
-//   expect(
-//     randomTroops("Clinton", ["Spearmen", "Swordsmen", "Archer"], 10000).length
-//   ).toBe(3);
-// });

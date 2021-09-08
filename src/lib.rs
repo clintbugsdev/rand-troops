@@ -47,7 +47,7 @@ fn rand_get_list(hashed_req_str: &str) -> Vec<String> {
         true => conn.unwrap().smembers(hashed_req_str).unwrap(),
         _ => vec![],
     };
-    println!("{:?}", list);
+    // println!("{:?}", list);
     list
 }
 
@@ -78,7 +78,7 @@ fn rand_add(hashed_req_str: &str, item: &String) -> bool {
         _ => (),
     };
 
-    println!("{}", item);
+    // println!("{}", item);
 
     true
 }
