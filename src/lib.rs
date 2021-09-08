@@ -78,6 +78,8 @@ fn rand_add(hashed_req_str: &str, item: &String) -> bool {
         _ => (),
     };
 
+    println!("{}", item);
+
     true
 }
 
@@ -130,8 +132,10 @@ pub extern "C" fn rand_generate(
             types -= 1;
             // end of loop
             if types == 0 {
+                // shuffle result
+                generated.shuffle(&mut rand::thread_rng());
                 // convert numbers to strings
-                let mut merged_generated = generated.clone().iter().join("-");
+                let mut merged_generated = generated.iter().join("-");
                 // is member then reset variables to go back to loop
                 if rand_is_member(hashed_req_str, &merged_generated) {
                     types = orig_types;

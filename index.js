@@ -2,5 +2,5 @@ const randomTroops = require("./random-troops");
 
 let player = "Clinton";
 let armyTypes = ["Spearmen", "Swordsmen", "Archer"];
-let armySize = 4;
+let armySize = 10;
 console.log(randomTroops(player, armyTypes, armySize));
