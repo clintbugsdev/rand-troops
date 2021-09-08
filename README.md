@@ -1,6 +1,8 @@
 # Getting Started
 
 This guide will help you get your system set up for building this project. 
+### Tip
+For best result and running output from this project. Please use Windows Subsystem for Linux when using Windows OS or run it in any the Linux or MacOS machine.
 
 ## Prerequisites
 
@@ -36,7 +38,31 @@ cargo clean
 cargo build --release
 ```
 #### 3. NPM
-This command installs a package and any packages that it depends on
+This command installs a package and any packages that it depends on.
 ```bash
 npm install
+```
+
+## Sample Usage
+#### 
+```javascript
+// Filename index.js
+
+// import random-troops.js module
+const randomTroops = require("./random-troops");
+
+// set the parameters
+let player = "Player 1";
+let armyTypes = ["Spearmen", "Swordsmen", "Archer"];
+let armySize = 10;
+
+// call the randomTroops fund and prints result
+console.log(randomTroops(player, armyTypes, armySize));
+```
+
+## Test
+#### 
+```bash
+# Run random-troops.test.js
+npm jest
 ```
